@@ -1,51 +1,64 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
 
-# initialise date frame
-#try:
- #   file_name = 'Data Collection sheets.xlsx'
-  #  print("File found")
-#except:
- #   print(f"{file_name} not found")   
+class DataAnalyser():
+
+  def __init__(self, file = 'Data Collection sheets'):
+     self.file = file
+     self.dataframe = pd.read_excel(file)
+
+  def find_appropriate_sheets(self):
+    list_of_sheets_for_data_analysis = []
+    for sheet_name in self.dataframe.sheet_names:
+      if 'DataAnalysis' in sheet_name:
+        list_of_sheets_for_data_analysis.append(sheet_name)
+
+      return list_of_sheets_for_data_analysis
+  
+  def plot_number_of_microfibres_against_variables(self):
+      
+
+      list_of_sheets_for_data_analysis = self.find_appropriate_sheets()
+      for sheet_name in list_of_sheets_for_data_analysis:
+        df = pd.read_excel(self.file, sheet_name)
+        independent_variable = df.iat[0,1]
+        dependent_variable ='Microfibre Number'
+        error_column = 'Microfibre Number Error'
+
+        coefficients = np.polyfit(df[independent_variable], df[dependent_variable], 1)
+        line_of_best_fit = np.poly1d(coefficients)
+        x_values = np.linspace(df[independent_variable].min(), df[independent_variable].max(), 100)
+        y_values = line_of_best_fit(x_values)
+
+        plt.errorbar(df[independent_variable], df[dependent_variable], yerr=df[error_column], fmt='o', capsize=5, label='Data Points')
+        plt.plot(x_values, y_values, 'r-', label='Line of Best Fit')
+        plt.xlabel(independent_variable)
+        plt.ylabel(dependent_variable)
+        plt.title(f"{dependent_variable} vs {independent_variable}")
+        plt.legend()
+        plt.show()
+
+        # Statz - Decide with team how we go forward
+
+        #standard_deviation = np.std(df[dependent_variable])
 
 
-#try:
- #   df = pd.read_excel(file_name, sheet_name="Control")
-  #  df = df[['Number of squares', 'Number of squares']].copy()
-   # print("Dataframe initialised")
-#except:
- #   print("Dataframe failed to initialise")  
-
-#print(df.head())
-#print(df.info())
-#print(df.dtypes)
-
-
+  def plot_length_of_microfibres_against_variable(self):
+     list_of_sheets_for_data_analysis = self.find_appropriate_sheets()
+     for sheet_name in list_of_sheets_for_data_analysis:
+        df = pd.read_excel(self.file, sheet_name)
+        independent_variable = df.iat[0,1]
+        dependent_variable ='Microfibre Length'
+        error_column = 'Microfibre Length Error'
+        # mainpulate dataframe
+        # plot histogram
+        # 20 bins of 15 units length
 
 
-
-def plot_data(file_name, name_of_sheet, x_data):
-
-    y_data ='Number of microfibres'
-    df_original = pd.read_excel(file_name, sheet_name=name_of_sheet)
-    df = df_original[[f"{x_data}",f"{y_data}"]].copy()
-    print(df.head())
-    print(df.info())
-    print(df.dtypes)
-    plt.plot(df[f"{x_data}"],df[f"{y_data}"])
-    plt.xlabel(f"{x_data}")
-    plt.ylabel(f"{y_data}")
-    plt.title(f"{y_data} vs {x_data}")
-    plt.show()
-
-
-
-file_name = 'Data Collection sheets.xlsx'
-name_of_sheet = input("What is the name of the excel sheet you are using? ")
-x_data = input("What variable are you varying, be careful to use the exact name used in the column of the spreadsheet? ")
-#y_data = 'Number of microfibres'
-
-plot_data(file_name, name_of_sheet, x_data)
+analyse_data = DataAnalyser()
+plot_numberplot_number_of_microfibres_against_variables_graphs = analyse_data.plot_number_of_microfibres_against_variables()
+      
 
 
 
